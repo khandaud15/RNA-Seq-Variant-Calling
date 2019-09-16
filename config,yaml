@@ -1,0 +1,53 @@
+############################################################
+# top level directories
+sourcedir: /ss/qm/qpject/CG/R/CL/cTL/expression
+refdir: /*****/m***c/Reference_genomes
+############################################################
+# software, binaries or tools
+tools:
+  fastq: fastqc
+  star: STAR
+  trimgalore: trim_galore
+  rsem:
+    calcexp: rsem-calculate-expression
+    prepref: rsem-prepare-reference
+# reference files, genome indices and data
+
+reference:
+  stargenomedir:
+    hg38: $refdir/starindex2/hg38index2/hg38
+
+  fasta:
+    hg38: $refdir/hg38/hg38.fa 
+
+  gtf:
+    hg38: $refdir/hg38/gencode.v30.annotation.gtf
+  
+  1000G:
+    hg38: $refdir/hg38/1000G_phase1.snps.high_confidence.hg38.vcf
+  
+  Indels:
+    hg38: $refdir/hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf
+  
+  DbSNP:
+    hg38: $refdir/hg38/dbsnp_138.hg38.vcf
+
+
+  star_ref: "/&&&/****c/Reference_genomes/starindex/hg38index/SAindex"
+
+
+# directory structure for input and output files
+
+datadirs:
+  fastq: $sourcedir/demo_data
+  qc: $sourcedir/qc_output
+  trim: $sourcedir/trimmed_files
+  bam: $sourcedir/pass1
+  sj_files: $sourcedir/sj_files
+  pass2: $sourcedir/pass2
+  RGbam: $sourcedir/RGbam
+  dedup: $sourcedir/dedup
+  splitNcigar: sourcedir/splitNcigar
+  Recal1: sourcedir/Recal1
+  BQSR_1: sourcedir/BQSR_1
+
