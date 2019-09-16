@@ -205,6 +205,7 @@ rule mark_dups:
          module load picard
         {params.picard} MarkDuplicates  INPUT={input.bam} OUTPUT={output.dbam} METRICS_FILE={output.metric} ASSUME_SORT_ORDER=coordinate OPTICAL_DUPLICATE_PIXEL_DISTANCE=100
           """
+
 # Index bam file using samtools
  rule index:
       input:
@@ -214,7 +215,9 @@ rule mark_dups:
       shell:"""
             module load samtools
             samtools index {input.bam} {output.bai}
-            """          
+            """ 
+
+
 #Splits N Cigar Reads from bam file
 rule splitNcigar:
      input:
@@ -253,6 +256,7 @@ rule BQSR_Pass1
            --known-sites  {input.DbSNP} \
            -O {output.recall}
            """
+           
 
 rule ApplyBQSR:
      input:
