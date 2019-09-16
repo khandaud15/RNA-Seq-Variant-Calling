@@ -41,6 +41,7 @@ rule fastqc:
         """
         fastqc  --thread 8 --outdir {params.prefix} --nogroup {input.f1}
         """
+
 #Trimmming of the illumina adapters.
 rule trim_galore_pe:
     input:
@@ -61,6 +62,7 @@ rule trim_galore_pe:
         -o {params.prefix} \
         --fastqc
          """
+         
 # 1. Map paired-end RNA-seq reads to the genome.
 # 2. Count the number of reads supporting each splice junction.
 rule pass1:
@@ -111,7 +113,7 @@ rule SJ_Merge:
          cat {input.sjs} | awk '$7 >= 3' | cut -f1-4 | sort -u > {output.sjs}
           """
 
-# Make an index of the genome for STAR using the merged splice junction information.
+# Make an index of the genome for STAR using the merged splice junction information to get better alignments around novel splice junctions.
 rule star_genome:
     input:
         fasta = config['reference']['fasta']['hg38'],
