@@ -3,16 +3,7 @@
 sourcedir: /ss/qm/qpject/CG/R/CL/cTL/expression
 refdir: /*****/m***c/Reference_genomes
 ############################################################
-# software, binaries or tools
-tools:
-  fastq: fastqc
-  star: STAR
-  trimgalore: trim_galore
-  rsem:
-    calcexp: rsem-calculate-expression
-    prepref: rsem-prepare-reference
 # reference files, genome indices and data
-
 reference:
   stargenomedir:
     hg38: $refdir/starindex2/hg38index2/hg38
