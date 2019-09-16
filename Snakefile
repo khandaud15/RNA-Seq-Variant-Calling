@@ -5,11 +5,12 @@ varsub(config)
 import glob
 import os
 
+# A snakemake regular expression matching the forward mate FASTQ files.
 SAMPLES, = glob_wildcards(config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz")
 READS = ["1", "2"]
 
 
-
+# Rules --------------------------------------------------------------------------------
 rule all:
       input:
          config['reference']['stargenomedir']['hg38'] + "/" + "SAindex"
@@ -25,7 +26,7 @@ rule all:
          expand(config['datadirs']['Recal1'] + "/" + "{file}_recal.table", file=SAMPLES),
          expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES )
 
-
+# QC of raw fastq files.
 rule fastqc:
    input:
       f1 = config['datadirs']['fastq'] + "/" + "{file}_{read}.fq.gz"
@@ -38,7 +39,7 @@ rule fastqc:
         """
         fastqc  --thread 8 --outdir {params.prefix} --nogroup {input.f1}
         """
-
+#Trimmming of the illumina adapters.
 rule trim_galore_pe:
     input:
       f1 = config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz",
@@ -58,7 +59,8 @@ rule trim_galore_pe:
         -o {params.prefix} \
         --fastqc
          """
-
+# 1. Map paired-end RNA-seq reads to the genome.
+# 2. Count the number of reads supporting each splice junction.
 rule pass1:
    input:
       f1 = config['datadirs']['trim'] + "/" + "{file}_1_val_1.fq.gz",
@@ -96,7 +98,7 @@ rule pass1:
         """ 
 
 
- 
+# Merge the Splice junction informtaion from Pass1 Mapping  
 rule SJ_Merge:
     input:
       sjs =  expand(config['datadirs']['bam'] + "/" + "{file}_SJ.out.tab" , file = SAMPLES)
@@ -107,7 +109,7 @@ rule SJ_Merge:
          cat {input.sjs} | awk '$7 >= 3' | cut -f1-4 | sort -u > {output.sjs}
           """
 
- 
+# Make an index of the genome for STAR using the merged splice junction information.
 rule star_genome:
     input:
         fasta = config['reference']['fasta']['hg38'],
@@ -135,7 +137,10 @@ rule star_genome:
         --sjdbOverhang {params.overhang}
           """
 
-          
+# 1. Map paired-end RNA-seq reads to the genome.
+# 2. Make a coordinate sorted BAM with genomic coordinates.
+# 3. Count the number of reads mapped to each gene.
+# 4. Count the number of reads supporting each splice junction.         
 rule pass2:
    input:
       f1 = config['datadirs']['trim'] + "/" + "{file}_1_val_1.fq.gz",
@@ -173,7 +178,7 @@ rule pass2:
         --limitBAMsortRAM 50000000000
         """
 
-
+# add read groups,Platform
 rule AddRG:
      input:
          bam = config['datadirs']['pass2'] + "/" + "{file}_Aligned.sortedByCoord.out.bam"
@@ -185,7 +190,7 @@ rule AddRG:
           java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups {params} I={input.bam} O={output.RG}
            """ 
                   
-
+# mark duplicates
 rule mark_dups:
     input:
        bam = config['datadirs']['RGbam'] + "/" + "{file}_Aligned.sortedByCoord.out.RG.bam"
@@ -200,7 +205,7 @@ rule mark_dups:
          module load picard
         {params.picard} MarkDuplicates  INPUT={input.bam} OUTPUT={output.dbam} METRICS_FILE={output.metric} ASSUME_SORT_ORDER=coordinate OPTICAL_DUPLICATE_PIXEL_DISTANCE=100
           """
-
+# Index bam file using samtools
  rule index:
       input:
          bam = config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam"
@@ -210,7 +215,7 @@ rule mark_dups:
             module load samtools
             samtools index {input.bam} {output.bai}
             """          
-
+#Splits N Cigar Reads from bam file
 rule splitNcigar:
      input:
         bam = config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam",
@@ -227,7 +232,7 @@ rule splitNcigar:
            -O {output.SBam} 
            """ 
 
-
+# base recalibration
 rule BQSR_Pass1          
      input:
         bam = config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam",
