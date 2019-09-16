@@ -7,6 +7,8 @@ import os
 
 # A snakemake regular expression matching the forward mate FASTQ files.
 SAMPLES, = glob_wildcards(config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz")
+
+# Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
 READS = ["1", "2"]
 
 
@@ -256,7 +258,7 @@ rule BQSR_Pass1
            --known-sites  {input.DbSNP} \
            -O {output.recall}
            """
-           
+
 
 rule ApplyBQSR:
      input:
