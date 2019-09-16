@@ -38,7 +38,7 @@ rule fastqc:
     threads : 12
     shell:"""
          fastqc  --threads {threads} --outdir {params.prefix} --nogroup {input.r1} {input.r2} 
-         """
+          """
 
 rule trim_galore_pe:
     input:
@@ -232,7 +232,7 @@ rule splitNcigar:
 rule BQSR_Pass1          
      input:
         bam = config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam",
-        1000GSNPs = config['reference']['1000G']['hg38'],
+        GSNPs = config['reference']['1000G']['hg38'],
         Indels = config['reference']['Indels']['hg38'],
         DbSNP = config['reference']['DbSNP']['hg38'],
         fasta = config['reference']['fasta']['hg38']
@@ -244,7 +244,7 @@ rule BQSR_Pass1
            gatk BaseRecalibrator \
            -I {input.bam} \
            -R {input.fasta} \
-           --known-sites  {input.1000GSNPs} \
+           --known-sites  {input.GSNPs} \
            --known-sites  {input.Indels}  \
            --known-sites  {input.DbSNP} \
            -O {output.recall}
