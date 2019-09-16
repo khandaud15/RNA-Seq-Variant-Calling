@@ -5,11 +5,27 @@ varsub(config)
 import glob
 import os
 
-########################Wild-card rule to take the sampes from the directory####################
 SAMPLES, = glob_wildcards(config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz")
 READS = ["1", "2"]
 
-###############Check the quality of the raw fastq files #######################
+
+
+rule all:
+      input:
+         config['reference']['stargenomedir']['hg38'] + "/" + "SAindex"
+         config['datadirs']['sj_files'] + "/" + "SJ.out.pass1_merged.tab",
+         expand(config['datadirs']['qc'] + "/" + "{file}_{read}_fastqc.html", file=SAMPLES, read= READS),
+         expand(config['datadirs']['trim'] + "/" + "{file}_{read}_val_{read}.fq.gz", file = SAMPLES, read= READS),
+         expand(config['datadirs']['bam'] + "/" + "{file}_SJ.out.tab", file = SAMPLES),
+         expand(config['datadirs']['pass2'] + "/" + "{file}_Aligned.sortedByCoord.out.bam", file = SAMPLES ),
+         expand(config['datadirs']['RGbam'] + "/" + "{file}_Aligned.sortedByCoord.out.RG.bam", file=SAMPLES),
+         expand(config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam",file=SAMPLES),
+         expand(config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam.bai", file=SAMPLES),
+         expand(config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam", file=SAMPLES),
+         expand(config['datadirs']['Recal1'] + "/" + "{file}_recal.table", file=SAMPLES),
+         expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES )
+
+
 rule fastqc:
     input:
 	     r1 = config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz",
@@ -23,7 +39,7 @@ rule fastqc:
     shell:"""
          fastqc  --threads {threads} --outdir {params.prefix} --nogroup {input.r1} {input.r2} 
          """
-################Trim the adapter sequences from raw fastq #########################
+
 rule trim_galore_pe:
     input:
       f1 = config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz",
@@ -44,7 +60,6 @@ rule trim_galore_pe:
         --fastqc
          """
 
-############# Maps the read to the reference genome############################
 rule pass1:
    input:
       f1 = config['datadirs']['trim'] + "/" + "{file}_1_val_1.fq.gz",
@@ -82,7 +97,7 @@ rule pass1:
         """ 
 
 
-######Merge all the Splice junction information from the pass1 as well as filters out the junction less than 3################## 
+ 
 rule SJ_Merge:
     input:
       sjs =  expand(config['datadirs']['bam'] + "/" + "{file}_SJ.out.tab" , file = SAMPLES)
@@ -93,7 +108,7 @@ rule SJ_Merge:
          cat {input.sjs} | awk '$7 >= 3' | cut -f1-4 | sort -u > {output.sjs}
           """
 
- ########### To increase the mapping effeciency,this steps again index the genome using Splice junction information from previous Pass########         
+ 
 rule star_genome:
     input:
         fasta = config['reference']['fasta']['hg38'],
@@ -121,7 +136,7 @@ rule star_genome:
         --sjdbOverhang {params.overhang}
           """
 
-########### Map the reads to the new indexed genome #################          
+          
 rule pass2:
    input:
       f1 = config['datadirs']['trim'] + "/" + "{file}_1_val_1.fq.gz",
@@ -159,7 +174,6 @@ rule pass2:
         --limitBAMsortRAM 50000000000
         """
 
-#######Add Read group and platform information to the bam file to be processed for Gatk tool ########## 
 
 rule AddRG:
      input:
@@ -171,7 +185,7 @@ rule AddRG:
           module load picard
           java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups {params} I={input.bam} O={output.RG}
            """ 
-######## Marks the duplicates Reads in your bam file ####################                  
+                  
 
 rule mark_dups:
     input:
@@ -187,7 +201,7 @@ rule mark_dups:
          module load picard
         {params.picard} MarkDuplicates  INPUT={input.bam} OUTPUT={output.dbam} METRICS_FILE={output.metric} ASSUME_SORT_ORDER=coordinate OPTICAL_DUPLICATE_PIXEL_DISTANCE=100
           """
-#####index bam file using samtools ############
+
  rule index:
       input:
          bam = config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam"
@@ -197,7 +211,7 @@ rule mark_dups:
             module load samtools
             samtools index {input.bam} {output.bai}
             """          
-######Splits reads that contain Ns in their cigar string (e.g. spanning splicing events in RNAseq data########
+
 rule splitNcigar:
      input:
         bam = config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam",
@@ -213,7 +227,7 @@ rule splitNcigar:
            -I {input.bam} \
            -O {output.SBam} 
            """ 
-#######Re Calibrates the quality of your  alligned bam file #################
+
 
 rule BQSR_Pass1          
      input:
@@ -236,7 +250,6 @@ rule BQSR_Pass1
            -O {output.recall}
            """
 
-########## correct for systematic bias that affect the assignment of base quality scores ##########
 rule ApplyBQSR:
      input:
         bam = config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam",
