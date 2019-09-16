@@ -1,1 +1,1 @@
-## RNA-Seq Variant calling pipeline based on the gatk4 Pipeline
+## RNA-Seq Variant Calling Pipeline based on the gatk4 workflow
