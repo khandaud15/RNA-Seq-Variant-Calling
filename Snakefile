@@ -27,18 +27,17 @@ rule all:
 
 
 rule fastqc:
-    input:
-	     r1 = config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz",
-       r2 = config['datadirs']['fastq'] + "/" + "{file}_2.fq.gz"
-    output:  config['datadirs']['qc'] + "/" + "{file}_{read}_fastqc.html"
-    params:
-	     prefix =  config['datadirs']['qc'], 
-	  resources:
-	     mem_mb= 10000
-    threads : 12
-    shell:"""
-         fastqc  --threads {threads} --outdir {params.prefix} --nogroup {input.r1} {input.r2} 
-          """
+   input:
+      f1 = config['datadirs']['fastq'] + "/" + "{file}_{read}.fq.gz"
+   output: config['datadirs']['qc'] + "/" + "{file}_{read}_fastqc.html", config['datadirs']['qc'] + "/" + "{file}_{read}_fastqc.zip"
+   params:
+      prefix =  config['datadirs']['qc'],
+   resources:
+      mem_mb= 10000
+   shell:
+        """
+        fastqc  --thread 8 --outdir {params.prefix} --nogroup {input.f1}
+        """
 
 rule trim_galore_pe:
     input:
