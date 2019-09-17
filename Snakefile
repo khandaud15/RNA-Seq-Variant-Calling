@@ -26,7 +26,12 @@ rule all:
          expand(config['datadirs']['dedup'] + "/" + "{file}_Aligned.sortedByCoord.out.md.bam.bai", file=SAMPLES),
          expand(config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam", file=SAMPLES),
          expand(config['datadirs']['Recal1'] + "/" + "{file}_recal.table", file=SAMPLES),
-         expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES )
+         expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES),
+         expand(config['datadirs']['Recal2'] + "/" + "{file}_recal.table", file=SAMPLES),
+         expand(config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam", file=SAMPLES),
+         expand(config['datadirs']['vcf'] + "/" + "{file}_vcf" , file=SAMPLES)
+
+
 
 # QC of raw fastq files.
 rule fastqc:
@@ -318,7 +323,7 @@ rule ApplyBQSR:
           --bqsr-recal-file {input.recal} \
           -O {output.Rbam}
           """  
-          
+
 
 #Variant Calling 
 rule gatk_HaplotypeCaller:
@@ -346,9 +351,6 @@ rule gatk_HaplotypeCaller:
 
 
 
-
-
-gatk HaplotypeCaller -R hg38.fa -I UVA122.recal.pass2.bam  -ERC GVCF --output-mode EMIT_ALL_CONFIDENT_SITES  --dont-use-soft-clipped-bases -stand-call-conf 20.0 -O UVA122.vcf
 
 
 
