@@ -22,3 +22,9 @@ This step  splits reads into exon segments (getting rid of Ns but maintaining gr
 #### Tools involved: [BaseRecalibrator](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_BaseRecalibrator.php), [Apply Recalibration](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_ApplyBQSR.php), [AnalyzeCovariates](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_AnalyzeCovariates.php)
 
 This step correct any systematic bias observed in the data. These Biases can originate from biochemical processes occured during library preparation and sequencing, from manufacturing defects in the chips, or instrumentation defects in the sequencer. The recalibration step involves collecting covariate statistics from all base calls in the dataset, building a model from those statistics, and applying base quality adjustments to the dataset based on the resulting model.
+
+#### Variant Calling
+#### Tools involved: [HaplotypeCaller](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php)
+
+The HaplotypeCaller calls the SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region
+
