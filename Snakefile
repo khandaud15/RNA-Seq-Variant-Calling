@@ -258,7 +258,7 @@ rule BQSR_Pass1
            --known-sites  {input.GSNPs} \
            --known-sites  {input.Indels}  \
            --known-sites  {input.DbSNP} \
-           -O {output.recall}
+           -O {output.Recall}
            """
 
 
@@ -278,3 +278,77 @@ rule ApplyBQSR:
           --bqsr-recal-file {input.recal} \
           -O {output.Rbam}
           """
+
+#Base Recalibration 
+rule BQSR_Pass2          
+     input:
+        bam = config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam",
+        GSNPs = config['reference']['1000G']['hg38'],
+        Indels = config['reference']['Indels']['hg38'],
+        DbSNP = config['reference']['DbSNP']['hg38'],
+        fasta = config['reference']['fasta']['hg38']
+     output:
+        Recall =  config['datadirs']['Recal2'] + "/" + "{file}_recal.table"
+     resources:
+        mem_mb = 50000
+     shell:"""
+           gatk BaseRecalibrator \
+           -I {input.bam} \
+           -R {input.fasta} \
+           --known-sites  {input.GSNPs} \
+           --known-sites  {input.Indels}  \
+           --known-sites  {input.DbSNP} \
+           -O {output.Recall}
+           """ 
+
+#detects systematic errors made by the sequencer when it estimates the quality score of each base call
+rule ApplyBQSR:
+     input:
+        bam = config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam",
+        fasta = config['reference']['fasta']['hg38'],
+        recal = config['datadirs']['Recal2'] + "/" + "{file}_recal.table"
+    output:
+        Rbam = config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam"
+    resources:
+        mem_mb = 50000
+    shell:"""
+          gatk ApplyBQSR \
+          -I {input.bam}  \
+          -R {input.fasta} \
+          --bqsr-recal-file {input.recal} \
+          -O {output.Rbam}
+          """  
+          
+
+#Variant Calling 
+rule gatk_HaplotypeCaller:
+    input:
+        bam = config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam"
+        fasta = config['reference']['fasta']['hg38']
+    output:
+        vcf =  config['datadirs']['vcf'] + "/" + "{file}_vcf"   
+    resources:
+        mem_mb = 50000
+    shell:"""
+           gatk HaplotypeCaller \
+           -R hg38.fa \
+           -I {input.bam} \
+           -ERC GVCF --output-mode EMIT_ALL_CONFIDENT_SITES  \
+           --dont-use-soft-clipped-bases \
+           -stand-call-conf 20.0  \
+           -O {output.vcf}
+
+   
+
+
+
+
+
+
+
+
+
+gatk HaplotypeCaller -R hg38.fa -I UVA122.recal.pass2.bam  -ERC GVCF --output-mode EMIT_ALL_CONFIDENT_SITES  --dont-use-soft-clipped-bases -stand-call-conf 20.0 -O UVA122.vcf
+
+
+
