@@ -14,3 +14,5 @@ The Star Mapping  step produces a BAM/SAM file, which we then put through the us
  #### Split'N'Trim and Reassign mapping qualities
 
 This step  splits reads into exon segments (getting rid of Ns but maintaining grouping information) and hard-clip any sequences overhanging into the intronic regions as well reassign mapping qualities to the alligned reads because STAR Napping assigns good alignments a MAPQ of 255 (which technically means “unknown” and is therefore meaningless to GATK)
+
+![workflow](SplitNCigar.png) 
