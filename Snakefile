@@ -133,7 +133,7 @@ rule star_genome:
     output:
         starindex = config['reference']['stargenomedir']['hg38'] + "/" + "SAindex"
     params:
-        overhang = 99
+        overhang = 149
     threads: 12
     resources:
         mem_mb = 40000
