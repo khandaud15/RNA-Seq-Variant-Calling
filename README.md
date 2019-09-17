@@ -12,10 +12,11 @@ The pipeline begin with mapping RNA reads to a reference, we have used STAR alig
 The Star Mapping  step produces a BAM/SAM file, which we then put through the usual Picard processing steps: adding read group information, sorting, marking duplicates and indexing for downstream processing.
 
  #### Split'N'Trim and Reassign mapping qualities
- #### Tools Involved[SplitNCigarReads](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_rnaseq_SplitNCigarReads.php)
+ #### Tools Involved:[SplitNCigarReads](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_rnaseq_SplitNCigarReads.php)
 
 This step  splits reads into exon segments (getting rid of Ns but maintaining grouping information) and hard-clip any sequences overhanging into the intronic regions as well reassign mapping qualities to the alligned reads because STAR Napping assigns good alignments a MAPQ of 255 (which technically means “unknown” and is therefore meaningless to GATK)
 
 ![DAG](https://github.com/khandaud15/RNA-Seq-Variant-Calling/blob/master/DAG/SplitNCigar.png)
 
 #### Base Quality Recalibration
+#### Tools involved:[BaseRecalibrator](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_BaseRecalibrator.php),[Apply Recalibration](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_ApplyBQSR.php),[AnalyzeCovariates](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_bqsr_AnalyzeCovariates.php) 
