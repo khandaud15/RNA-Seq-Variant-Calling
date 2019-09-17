@@ -1,9 +1,13 @@
+# @author: Daud Khan
+# @date: September 15, 2019
+# @desc: Snakemake pipeline for https://www.broadinstitute.org/gatk/guide/article?id=3891
+
 shell.prefix("source ~/.bash_profile; set -euo pipefail;")
 from util.varsub import varsub
 configfile: "config.yaml"
 varsub(config)
-import glob
-import os
+import glob, os
+
 
 # A snakemake regular expression matching the forward mate FASTQ files.
 SAMPLES, = glob_wildcards(config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz")
