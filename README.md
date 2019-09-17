@@ -4,5 +4,5 @@
  ## Main Steps 
 
  ###Mapping to the Reference
- Tools involved:[STAR](https://github.com/alexdobin/STAR)
+ * Tools involved:[STAR](https://github.com/alexdobin/STAR)
 We begin with mapping RNA reads to a reference, we recommend using STAR aligner because it increased sensitivity compared to TopHat (especially for INDELS). We use STAR’s two-pass mode to get better alignments around novel splice junctions.
