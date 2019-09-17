@@ -26,5 +26,5 @@ This step correct any systematic bias observed in the data. These Biases can ori
 #### Variant Calling
 #### Tools involved: [HaplotypeCaller](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php)
 
-The HaplotypeCaller calls the SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region
+The step calls the SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region
 
