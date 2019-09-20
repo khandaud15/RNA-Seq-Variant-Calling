@@ -249,7 +249,7 @@ rule splitNcigar:
            """ 
 
 # base recalibration
-rule BQSR_Pass1          
+rule BQSR_Pass1:         
      input:
         bam = config['datadirs']['splitNcigar'] + "/" + "{file}_split.out.bam",
         GSNPs = config['reference']['1000G']['hg38'],
@@ -289,7 +289,7 @@ rule ApplyBQSR:
           """
 
 #Base Recalibration 
-rule BQSR_Pass2          
+rule BQSR_Pass2:         
      input:
         bam = config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam",
         GSNPs = config['reference']['1000G']['hg38'],
