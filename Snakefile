@@ -33,7 +33,7 @@ rule all:
          expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES),
          expand(config['datadirs']['Recal2'] + "/" + "{file}_recal.table", file=SAMPLES),
          expand(config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam", file=SAMPLES),
-         expand(config['datadirs']['vcf'] + "/" + "{file}_vcf" , file=SAMPLES)
+         expand(config['datadirs']['vcf'] + "/" + "{file}.vcf" , file=SAMPLES)
 
 
 
@@ -335,14 +335,15 @@ rule gatk_HaplotypeCaller:
         bam = config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam"
         fasta = config['reference']['fasta']['hg38']
     output:
-        vcf =  config['datadirs']['vcf'] + "/" + "{file}_vcf"   
+        vcf =  config['datadirs']['vcf'] + "/" + "{file}.vcf"   
     resources:
         mem_mb = 50000
     shell:"""
            gatk HaplotypeCaller \
-           -R hg38.fa \
+           -R {input.fasta} \
            -I {input.bam} \
            -ERC GVCF --output-mode EMIT_ALL_CONFIDENT_SITES  \
            --dont-use-soft-clipped-bases \
            -stand-call-conf 20.0  \
            -O {output.vcf}
+           """
