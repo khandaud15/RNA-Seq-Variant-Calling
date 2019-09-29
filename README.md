@@ -28,3 +28,25 @@ This step correct any systematic bias observed in the data. These Biases can ori
 
 The step calls the SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region
 
+
+## Required Tools  
+
+ * [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) (A quality control tool for high throughput sequence data)
+
+ * [Trim-galore](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) (Automates quality  control and adapter trimming of fastq  files)
+
+ * [STAR](https://github.com/alexdobin/STAR) (Spliced aware ultrafast transcript alligner to refernece genome)
+
+ * [Picard](https://broadinstitute.github.io/picard/) (Cammand line set  tool to manipulate high-throughput sequencing data)
+ * [GATK4](https://software.broadinstitute.org/gatk/gatk4)
+
+ #### Use STAR to index the genome for 1st pass allignment, the 2nd pass allignemnt uses the new index from merged SJ.out.tab files from the  script
+```
+ STAR  --runMode genomeGenerate --runThreadN 24 --genomeDir ./ --genomeFastaFiles hg38.fa   --sjdbGTFfile gencode.v30.annotation.gtf 
+```
+
+#### To Run the pipeline on cluster using this command 'modify cluster.json  parameters according to your cluster configuration 
+```
+snakemake -j 999 --configfile config.yaml --use-conda --nolock --cluster-config cluster.json --cluster "sbatch -A {cluster.account} -p {cluster.partition}  -N {cluster.N} -n {cluster.n}  -t {cluster.time} --mem {cluster.mem}"
+```
+
