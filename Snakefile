@@ -15,6 +15,12 @@ SAMPLES, = glob_wildcards(config['datadirs']['fastq'] + "/" + "{file}_1.fq.gz")
 # Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
 READS = ["1", "2"]
 
+# List of "{sample}.g.vcf.gz"
+# used for rule "combineGVCFs"
+
+gvcfLst = expand(config['datadirs']['vcf'] + "/" + "{file}.g.vcf" , file=SAMPLES)
+
+
 
 # Rules --------------------------------------------------------------------------------
 rule all:
@@ -33,7 +39,8 @@ rule all:
          expand(config['datadirs']['BQSR_1'] + "/" + "{file}_recal.pass1.bam", file=SAMPLES),
          expand(config['datadirs']['Recal2'] + "/" + "{file}_recal.table", file=SAMPLES),
          expand(config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam", file=SAMPLES),
-         expand(config['datadirs']['vcf'] + "/" + "{file}.vcf" , file=SAMPLES)
+         expand(config['datadirs']['vcf'] + "/" + "{file}.g.vcf" , file=SAMPLES),
+         config['datadirs']['CombinedGvcfs'] + "/" + "all.g.vcf"
 
 
 
@@ -335,7 +342,7 @@ rule gatk_HaplotypeCaller:
         bam = config['datadirs']['BQSR_2'] + "/" + "{file}_recal.pass2.bam"
         fasta = config['reference']['fasta']['hg38']
     output:
-        vcf =  config['datadirs']['vcf'] + "/" + "{file}.vcf"   
+        vcf =  config['datadirs']['vcf'] + "/" + "{file}.g.vcf"   
     resources:
         mem_mb = 50000
     shell:"""
@@ -347,3 +354,25 @@ rule gatk_HaplotypeCaller:
            -stand-call-conf 20.0  \
            -O {output.vcf}
            """
+ #Combine all the gVCFS for joint calling 
+rule CombineGvfs:
+     input:
+        vcfs =  gvcfLst,
+        fasta = config['reference']['fasta']['hg38']
+     output:
+        combined = config['datadirs']['CombinedGvcfs'] + "/" + "all.g.vcf" 
+     params:
+        lst = " --variant " .join(gvcfLst)
+     resources:
+        mem_mb = 100000
+     shell:"""
+           module load gatk
+           export JAVA_TOOL_OPTIONS=-Xmx140g
+           gatk CombineGVCFs \
+           -R {input.fasta} \
+           -O {output.combined} \
+           --variant {params.lst}
+           """         
+  
+ 
+
