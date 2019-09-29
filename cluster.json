@@ -1,0 +1,14 @@
+{
+        "__default__": {
+                "account": "********",
+                "time": "90:00:00",
+                "ncpus": 12,
+                "ntasks": 1,
+                "mem": 150000,
+                "partition": "standard"
+        },
+        "rule haplotypecaller": {
+                "time": "05: 00: 00",
+                "mem": 80000
+        }
+}
