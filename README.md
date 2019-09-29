@@ -1,5 +1,5 @@
 ## RNA-Seq Variant Calling Pipeline 
- This workflow is based on calling variants on RNA-Seq data using GATK4. the pipeline starts all the  way from raw Fastq files and end up with giving the VCF files. 
+ This workflow is based on calling variants on RNA-Seq data using GATK4. the pipeline starts all the  way from raw Fastq files and end up with  VCF file with the joint calling. 
 
  ## Main Steps 
 
@@ -47,6 +47,6 @@ The step calls the SNPs and indels simultaneously via local de-novo assembly of 
 
 #### To Run the pipeline on cluster using this command 'modify cluster.json  parameters according to your cluster configuration 
 ```
-snakemake -j 999 --configfile config.yaml --use-conda --nolock --cluster-config cluster.json --cluster "sbatch -A {cluster.account} -p {cluster.partition}  -c {cluster.ncpus} -n {cluster.ntasks}  -t {cluster.time} --mem {cluster.mem}"
+snakemake -j 999 --configfile config.yaml --use-conda --nolock --cluster-config cluster.json --cluster "sbatch -A {cluster.account} -p {cluster.partition}  -c {cluster.ncpus} -n {cluster.ntasks }  -t {cluster.time} --mem {cluster.mem}"
 ```
 
