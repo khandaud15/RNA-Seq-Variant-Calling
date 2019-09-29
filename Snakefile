@@ -354,6 +354,7 @@ rule gatk_HaplotypeCaller:
            -stand-call-conf 20.0  \
            -O {output.vcf}
            """
+           
  #Combine all the gVCFS for joint calling 
 rule CombineGvfs:
      input:
