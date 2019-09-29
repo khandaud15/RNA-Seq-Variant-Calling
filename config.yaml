@@ -43,5 +43,6 @@ datadirs:
   BQSR_1: $sourcedir/BQSR_1
   Recal2: $sourcedir/Recal2
   BQSR_2: $sourcedir/BQSR_2
+  vcf: sourcedir/vcf
   CombinedGvcfs: $sourcedir/CombinedGvcfs
 
