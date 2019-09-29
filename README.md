@@ -38,6 +38,7 @@ The step calls the SNPs and indels simultaneously via local de-novo assembly of 
  * [STAR](https://github.com/alexdobin/STAR) (Spliced aware ultrafast transcript alligner to refernece genome)
 
  * [Picard](https://broadinstitute.github.io/picard/) (Cammand line set  tool to manipulate high-throughput sequencing data)
+ * [Samtools](http://samtools.sourceforge.net) (Tool for  manipulating alignments in the SAM/BAM format, including sorting, merging, indexing and generating alignments in a per-position format)
  * [GATK4](https://software.broadinstitute.org/gatk/gatk4) (software package to covers all major variant classes from NGS Dataset)
 
  #### Index the genome for 1st pass allignment, the 2nd pass allignemnt uses the new index from merged SJ.out.tab files from the  script
